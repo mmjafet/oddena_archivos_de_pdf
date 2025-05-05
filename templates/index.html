@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordenador Alfabético de PDFs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #f72585;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+            --success-color: #4CAF50;
+            --error-color: #f44336;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            max-width: 800px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .header-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .description {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .upload-form {
+            background-color: rgba(67, 97, 238, 0.05);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            border: 2px dashed #ddd;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-form:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .file-input-container {
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .file-input-label {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .file-input-label:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .file-input-label i {
+            margin-right: 8px;
+        }
+        
+        input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+        
+        .selected-file {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+            display: none;
+        }
+        
+        .submit-btn {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .submit-btn i {
+            margin-right: 8px;
+        }
+        
+        .error {
+            color: var(--error-color);
+            background-color: rgba(244, 67, 54, 0.1);
+            padding: 12px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .benefits {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        .benefit {
+            flex: 1;
+            padding: 0 15px;
+        }
+        
+        .benefit i {
+            font-size: 28px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .benefit h3 {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        
+        .benefit p {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="container">
+            <div class="header">
+                <i class="fas fa-file-pdf header-icon"></i>
+                <h1>Ordenador Alfabético de PDFs</h1>
+            </div>
+            
+            <div class="content">
+                <p class="description">Esta aplicación ordena las páginas de un PDF por orden alfabético, basándose en los nombres de observadores electorales que aparecen en cada página.</p>
+                
+                {% if error %}
+                <div class="error">
+                    <i class="fas fa-exclamation-circle"></i> {{ error }}
+                </div>
+                {% endif %}
+                
+                <div class="upload-form">
+                    <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+                        <div class="file-input-container">
+                            <label for="pdf_file" class="file-input-label">
+                                <i class="fas fa-cloud-upload-alt"></i> Seleccionar archivo PDF
+                            </label>
+                            <input type="file" id="pdf_file" name="pdf_file" accept=".pdf" required>
+                            <div id="file-name" class="selected-file">Ningún archivo seleccionado</div>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-magic"></i> Ordenar PDF
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="benefits">
+                    <div class="benefit">
+                        <i class="fas fa-sort-alpha-down"></i>
+                        <h3>Ordenación Alfabética</h3>
+                        <p>Organiza los documentos automáticamente por nombre</p>
+                    </div>
+                    <div class="benefit">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Procesamiento Rápido</h3>
+                        <p>Resultados en segundos</p>
+                    </div>
+                    <div class="benefit">
+                        <i class="fas fa-lock"></i>
+                        <h3>Seguro</h3>
+                        <p>Tus archivos se eliminan automáticamente</p>
+                    </div>
+                </div>
+            </div>
+            
+            <footer>
+                © 2025 Ordenador Alfabético de PDFs
+            </footer>
+        </div>
+    </div>
+    
+    <script>
+        // Display selected filename
+        document.getElementById('pdf_file').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'Ningún archivo seleccionado';
+            const fileNameElement = document.getElementById('file-name');
+            fileNameElement.textContent = fileName;
+            fileNameElement.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
